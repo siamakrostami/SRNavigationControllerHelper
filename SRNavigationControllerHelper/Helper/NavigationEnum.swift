@@ -8,37 +8,12 @@
 import Foundation
 import UIKit
 
-// MARK: - RightNavigationButtons
+// MARK: - SRNavigationItem
 
-enum RightNavigationButtons {
-    case support(tintColor: UIColor?)
-    case settings(tintColor: UIColor?)
-    case info(tintColor: UIColor?)
-
-    // MARK: Internal
-
-    var icon: UIImage? {
-        switch self {
-        case .support:
-            return UIImage(systemName: "phone.fill.badge.plus")?.withRenderingMode(.alwaysTemplate)
-        case .settings:
-            return UIImage(systemName: "gearshape.fill")?.withRenderingMode(.alwaysTemplate)
-        case .info:
-            return UIImage(systemName: "info.circle.fill")?.withRenderingMode(.alwaysTemplate)
-        }
-    }
-}
-
-// MARK: - LeftNavigationButtons
-
-enum LeftNavigationButtons {
-    case back(type: BackStyle, tintColor: UIColor?)
-
-    // MARK: Internal
-
-    var icon: UIImage? {
-        return UIImage(systemName: "chevron.left")?.withRenderingMode(.alwaysTemplate)
-    }
+enum SRNavigationItem {
+    case backButton(style: BackStyle, icon: UIImage?, tintColor: UIColor?)
+    case button(tintColor: UIColor?, icon: UIImage?, action: Selector?)
+    case customView(view: UIView?)
 }
 
 // MARK: - BackStyle

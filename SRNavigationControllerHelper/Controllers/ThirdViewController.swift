@@ -18,7 +18,11 @@ class ThirdViewController: BaseViewController {
     
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
-        navigation.configureNavigationBar(isHidden: false,isTranslucent: true,prefersLargeTitles: true, leftItems: [.back(type: .pop, tintColor: .black)],title: "Third View Controller" ,rightItems: nil)
+        let customView = UIView(frame: .init(origin: .zero, size: .init(width: 30, height: 30)))
+        customView.backgroundColor = .black
+        customView.clipsToBounds = true
+        customView.layer.cornerRadius = 15
+        navigation.configureNavigationBar(isHidden: false,isTranslucent: true,prefersLargeTitles: true, leftItems: [.backButton(style: .pop, icon: UIImage(systemName: "chevron.left"), tintColor: .black)],title: "Third View Controller" ,rightItems: [.customView(view: customView)])
             .withCustomAppearance(backgroundColor: .lightGray)
     }
     

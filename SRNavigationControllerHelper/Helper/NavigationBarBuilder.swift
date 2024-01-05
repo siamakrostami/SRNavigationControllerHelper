@@ -20,9 +20,12 @@ class NavigationBarBuilder<T: UIViewController>: NSObject {
         backType = nil
     }
 
-    // MARK: Private
+    // MARK: Internal
 
     var controller: T?
+
+    // MARK: Private
+
     private var backType: BackStyle?
 
     @objc private func navigateToSupport() {}
@@ -37,7 +40,7 @@ class NavigationBarBuilder<T: UIViewController>: NSObject {
             controller?.navigationController?.popViewController(animated: true)
         case .popToRoot:
             controller?.navigationController?.popToRootViewController(animated: true)
-        case let .popToViewController(viewController):
+        case .popToViewController(let viewController):
             controller?.navigationController?.popToViewController(ofClass: viewController)
         }
     }
@@ -89,10 +92,10 @@ extension NavigationBarBuilder {
         isHidden: Bool,
         isTranslucent: Bool? = nil,
         prefersLargeTitles: Bool? = nil,
-        leftItems: [LeftNavigationButtons]?,
+        leftItems: [SRNavigationItem]?,
         title: String? = nil,
         logo: String? = nil,
-        rightItems: [RightNavigationButtons]?) -> Self
+        rightItems: [SRNavigationItem]?) -> Self
     {
         controller?.navigationController?.navigationBar.isTranslucent = isTranslucent ?? false
         controller?.navigationController?.navigationBar.prefersLargeTitles = prefersLargeTitles ?? false
@@ -104,7 +107,7 @@ extension NavigationBarBuilder {
         return self
     }
 
-    private func setLeftItems(leftItems: [LeftNavigationButtons]?) {
+    private func setLeftItems(leftItems: [SRNavigationItem]?) {
         guard let leftItems else {
             controller?.navigationItem.leftBarButtonItems = []
             controller?.navigationItem.hidesBackButton = true
@@ -115,12 +118,20 @@ extension NavigationBarBuilder {
         leftItems.forEach { [weak self] in
             var action: UIBarButtonItem!
             switch $0 {
-            case let .back(type, tintColor):
-                self?.backType = type
-                action = UIBarButtonItem(
-                    image: $0.icon, style: .plain, target: self, action: #selector(self?.back))
+            case .backButton(let style, let icon, let tint):
+                action = UIBarButtonItem(image: icon?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(self?.back))
+                action.tintColor = tint
+                self?.backType = style
+                items.append(action)
+            case .button(let tintColor, let icon, let actions):
+                action = UIBarButtonItem(image: icon?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: actions)
                 action.tintColor = tintColor
                 items.append(action)
+            case .customView(let view):
+                if let view = view {
+                    action = UIBarButtonItem(customView: view)
+                    items.append(action)
+                }
             }
             if !items.isEmpty {
                 self?.controller?.navigationItem.setLeftBarButtonItems(items, animated: true)
@@ -129,13 +140,14 @@ extension NavigationBarBuilder {
                 self?.controller?.navigationItem.hidesBackButton = true
             }
         }
+
     }
 
     private func handleNavigationBarVisiblity(isHidden: Bool) {
         controller?.navigationController?.setNavigationBarHidden(isHidden, animated: true)
     }
 
-    private func setRightItems(rightItems: [RightNavigationButtons]?) {
+    private func setRightItems(rightItems: [SRNavigationItem]?) {
         guard let rightItems else {
             controller?.navigationItem.rightBarButtonItems = []
             controller?.navigationItem.hidesBackButton = true
@@ -145,21 +157,20 @@ extension NavigationBarBuilder {
         rightItems.forEach { [weak self] in
             var action: UIBarButtonItem!
             switch $0 {
-            case let .support(tintColor):
-                action = UIBarButtonItem(
-                    image: $0.icon, style: .plain, target: self, action: #selector(self?.navigateToSupport))
+            case .backButton(let style, let icon, let tint):
+                action = UIBarButtonItem(image: icon?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(self?.back))
+                action.tintColor = tint
+                self?.backType = style
+                items.append(action)
+            case .button(let tintColor, let icon, let actions):
+                action = UIBarButtonItem(image: icon?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: actions)
                 action.tintColor = tintColor
                 items.append(action)
-            case let .settings(tintColor):
-                action = UIBarButtonItem(
-                    image: $0.icon, style: .plain, target: self, action: #selector(self?.navigateToSettings))
-                action.tintColor = tintColor
-                items.append(action)
-            case let .info(tintColor):
-                action = UIBarButtonItem(
-                    image: $0.icon, style: .plain, target: self, action: #selector(self?.info))
-                action.tintColor = tintColor
-                items.append(action)
+            case .customView(let view):
+                if let view = view {
+                    action = UIBarButtonItem(customView: view)
+                    items.append(action)
+                }
             }
             if !items.isEmpty {
                 self?.controller?.navigationItem.setRightBarButtonItems(items, animated: true)
@@ -168,6 +179,7 @@ extension NavigationBarBuilder {
                 self?.controller?.navigationItem.hidesBackButton = true
             }
         }
+
     }
 
     private func setLogo(logo: String? = nil) {
