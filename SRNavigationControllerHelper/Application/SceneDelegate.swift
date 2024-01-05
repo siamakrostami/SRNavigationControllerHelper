@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         let controller = FirstViewController()
         window = UIWindow(windowScene: scene)
-        window?.rootViewController = BaseNavigation(rootViewController: controller)
+        window?.rootViewController = BaseNavigation(rootViewController: controller, font: .systemFont(ofSize: 18), textColor: .black, backGroundColor: .systemBackground)
         window?.makeKeyAndVisible()
     }
 
