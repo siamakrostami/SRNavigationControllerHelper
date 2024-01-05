@@ -22,7 +22,7 @@ class SecondViewController: BaseViewController {
 
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
-        navigation.configureNavigationBar(isHidden: false, leftItems: [.back(type: .pop, tintColor: .systemBlue)],logo: "batman", rightItems: nil)
+        navigation.configureNavigationBar(isHidden: false, leftItems: [.backButton(style: .pop, icon: UIImage(systemName: "chevron.left"), tintColor: .black)],logo: "batman", rightItems: nil)
             .withCustomAppearance(backgroundColor: .red)
     }
 
